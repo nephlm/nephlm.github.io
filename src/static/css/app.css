@@ -1,0 +1,31 @@
+* {
+    margin: 2px;
+    padding: 2px;
+}
+div {
+    border-width: 1px;
+    border-style: solid;
+}
+label {
+    opacity: 0.5 ;
+    font-size: 80%;
+    text-align: center;
+    width: 100%;
+}
+#controls {
+    vertical-align: top;
+/*    display: inline-block;
+    *display: inline;
+*/}
+.control {
+    vertical-align: top;
+    display: inline-block;
+}
+.control-value {
+}
+.hcenter {
+    text-align: center;
+}
+.arrow {
+    font-size: 150%;
+}

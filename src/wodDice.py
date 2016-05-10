@@ -21,10 +21,11 @@ class D10(object):
 
 
 class Roll(object):
-    def __init__(self, poolSize, diff, pTorment):
+    def __init__(self, poolSize, diff, pTorment, charmed=0):
         self.poolSize = poolSize
         self.diff = diff
         self.pTorment = pTorment
+        self.charmed = charmed
         self.dice = []
         for i in range(self.poolSize):
             self.dice.append(D10())
@@ -64,19 +65,20 @@ class Roll(object):
         return total
 
     def netSuccesses(self, diff=None):
-        return self.successes(diff) - max(0, (self.botches - CHARMED))
+        return self.successes(diff) - max(0, (self.botches - self.charmed))
 
     def isBotchRoll(self, diff=None):
-         return self.netSuccesses(diff) <= 0 and self.botches > CHARMED
+         return self.netSuccesses(diff) <= 0 and self.botches > self.charmed
 
     def isTormentRoll(self, diff=None, pTorment=None):
         return self.torment(diff, pTorment) > self.netSuccesses(diff)/2
 
 class RollSim(object):
-    def __init__(self, poolSize, diff, pTorment, iterations=10000):
+    def __init__(self, poolSize, diff, pTorment, charmed=0, iterations=10000):
         self.poolSize = poolSize
         self.diff = diff
         self.pTorment = pTorment
+        self.charmed = charmed
         self._iterations = iterations
         self.successes = [0 for x in range(self.poolSize + 1)]
         self.failures = 0
@@ -87,7 +89,7 @@ class RollSim(object):
 
     @property
     def successPercent(self):
-        return map(self._percent, self.successes[1:])
+        return list(map(self._percent, self.successes[1:]))
 
     @property
     def failurePercent(self):
@@ -107,7 +109,7 @@ class RollSim(object):
 
     def sim(self):
         for _ in range(self._iterations):
-            roll = Roll(self.poolSize, self.diff, self.pTorment)
+            roll = Roll(self.poolSize, self.diff, self.pTorment, self.charmed)
             if roll.netSuccesses() <= 0:
                 self.failures += 1
                 if roll.isBotchRoll():
@@ -127,26 +129,26 @@ class RollSim(object):
 
 def roll(dicePool, diff):
 
-    r = Roll(dicePool, diff, PERMENANT_TORMENT)
-    print r.sortedDice
-    print 'Successes: %s' % r.successes()
-    print 'Botches: %s' % r.botches
-    print 'Torment: %s' % r.torment()
-    print 'NetSuccesses: %s' % r.netSuccesses()
+    r = Roll(dicePool, diff, PERMENANT_TORMENT, CHARMED)
+    print(r.sortedDice)
+    print('Successes: %s' % r.successes())
+    print('Botches: %s' % r.botches)
+    print('Torment: %s' % r.torment())
+    print('NetSuccesses: %s' % r.netSuccesses())
     if r.isBotchRoll():
-        print 'BOTCH!'
+        print('BOTCH!')
     elif r.isTormentRoll():
-        print 'TORMENT!'
+        print('TORMENT!')
 
 def sim(dicePool, diff):
-    sim = RollSim(dicePool, diff, PERMENANT_TORMENT)
-    print 'Failures: %s - %s%%' % (sim.failures, sim.failurePercent)
-    print 'Botches: %s - %s%%' % (sim.botches, sim.botchPercent)
-    print 'Torment: %s - %s%%' % (sim.torment, sim.tormentPercent)
-    print 'Successes: %s' % `sim.successes[1:]`
-    print 'Percent: %s' % ['%s%%' % x for x in sim.successPercent]
+    sim = RollSim(dicePool, diff, PERMENANT_TORMENT, CHARMED)
+    print('Failures: %s - %s%%' % (sim.failures, sim.failurePercent))
+    print('Botches: %s - %s%%' % (sim.botches, sim.botchPercent))
+    print('Torment: %s - %s%%' % (sim.torment, sim.tormentPercent))
+    print('Successes: %s' % str(sim.successes[1:]))
+    print('Percent: %s' % ['%s%%' % x for x in sim.successPercent])
 
-    print sim.expectedSuccesses
+    print(sim.expectedSuccesses)
 
 def enhance(dicePool, diff, enhanceNum, maxAddDice=None):
     if maxAddDice is None:
@@ -155,28 +157,28 @@ def enhance(dicePool, diff, enhanceNum, maxAddDice=None):
     torment = PERMENANT_TORMENT
 
     for elvl in range(enhanceNum):
-        print '\nEnhance Level: %s' % (elvl +1)
+        print('\nEnhance Level: %s' % (elvl +1))
         if diff <= 2 and dicePool < maxDicePool:
             c1 = RollSim(dicePool+1, diff, torment)
-            print 'dicePool=%s; diff=%s: %s' % (c1.poolSize, c1.diff, c1.expectedSuccesses)
+            print('dicePool=%s; diff=%s: %s' % (c1.poolSize, c1.diff, c1.expectedSuccesses))
             dicePool +=1
             continue
         elif diff > 2 and dicePool >= maxDicePool:
             c2 = RollSim(dicePool, diff-1, torment)
-            print 'dicePool=%s; diff=%s: %s' % (c2.poolSize, c2.diff, c2.expectedSuccesses)
+            print('dicePool=%s; diff=%s: %s' % (c2.poolSize, c2.diff, c2.expectedSuccesses))
             diff -= 1
             continue
         elif diff > 2 and dicePool < maxDicePool:
             c1 = RollSim(dicePool+1, diff, torment)
-            print 'dicePool=%s; diff=%s: %s' % (c1.poolSize, c1.diff, c1.expectedSuccesses)
+            print('dicePool=%s; diff=%s: %s' % (c1.poolSize, c1.diff, c1.expectedSuccesses))
             c2 = RollSim(dicePool, diff-1, torment)
-            print 'dicePool=%s; diff=%s: %s' % (c2.poolSize, c2.diff, c2.expectedSuccesses)
+            print('dicePool=%s; diff=%s: %s' % (c2.poolSize, c2.diff, c2.expectedSuccesses))
             if c1.expectedSuccesses > c2.expectedSuccesses:
                 dicePool += 1
             else:
                 diff -= 1
         else:
-            print 'Max Enhance'
+            print('Max Enhance')
             break
 
 
