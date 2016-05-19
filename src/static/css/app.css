@@ -17,8 +17,16 @@ p {
     margin: 0;
     padding: 0;
 }
+td {
+    padding: .25em;
+    text-align: center;
+}
+thead {
+    font-weight: bold;
+}
 .header {
     margin: .25em;
+    color: #300;
 }
 #controls {
     vertical-align: top;
@@ -47,6 +55,11 @@ p {
 }
 .arrow {
     font-size: 150%;
+    cursor: pointer;
+}
+.arrow:hover {
+    background-color: #eee;
+    color: #400;
 }
 .buttons {
     border-style: solid;
@@ -65,9 +78,24 @@ p {
 .hidden {
     display: none;
 }
+.shade {
+    background-color: #eee;
+}
 .roll {
     border-style: solid;
     border-bottom-width: 1px;
+    cursor: pointer;
+    padding-left: .25em;
+    padding-bottom: .15em;
+}
+.roll:hover {
+    background-color: #fff5f5;
+}
+.roll-label {
+    cursor: pointer;
+}
+#sim {
+    padding-left: .25em;
 }
 .sim-bar {
     color:green;
@@ -84,4 +112,7 @@ p {
     width: 4.5em;
     text-align: right;
     overflow: hidden;
+}
+#enhance {
+    padding-left: .25em;
 }

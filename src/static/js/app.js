@@ -2,6 +2,7 @@ var demonDiceApp = angular.module('demonDiceApp', ['ui.bootstrap']);
 
 demonDiceApp.controller('DemonDiceCtrl',
     ['$scope', '$http', function ($scope, $http) {
+    $scope.id = 0;
     $scope.pool = 5;
     $scope.item = 0;
     $scope.diff = 6;
@@ -18,6 +19,9 @@ demonDiceApp.controller('DemonDiceCtrl',
 
     //sim
     $scope.simData = '';
+
+    //enhance
+    $scope.enhanceData = '';
 
 
     $scope.dec = function(item) {
@@ -41,8 +45,28 @@ demonDiceApp.controller('DemonDiceCtrl',
         success(function(data) {
             data.iPool = $scope.item;
             data.bPool = $scope.pool;
+            data.id = $scope.id;
+            $scope.id++;
             $scope.rolls.unshift(data);
+            if ($scope.rolls.length > 30) {
+                $scope.rolls.length = 30
+            };
         });
+    };
+
+    $scope.reroll = function(data) {
+        $scope.pool = data.bPool;
+        $scope.item = data.iPool;
+        $scope.diff = data.diff;
+        $scope.charmed = data.charmed;
+        $scope.torment = data.torment;
+        $scope.roll($scope.diff, $scope.pool+$scope.item, $scope.torment, $scope.charmed);
+    };
+
+    $scope.isShade = function (data) {
+        if ((data.id % 2) == 0) {
+            return "shade";
+        }
     };
 
     $scope.sim = function(diff, pool, torment, charmed) {
@@ -60,18 +84,15 @@ demonDiceApp.controller('DemonDiceCtrl',
         });
     };
 
-    $scope.enhance = function(diff, pool, torment, charmed) {
+    $scope.enhance = function() {
         $scope.show = 'enhance';
-        console.log([diff, pool, torment, charmed])
-        $http.get('/api/roll/' +
-                            diff + '/' +
-                            pool + '/' +
-                            torment + '/' +
-                            charmed + '/').
+        $http.get('/api/enhance/' +
+                            $scope.diff + '/' +
+                            $scope.pool + '/' +
+                            $scope.item + '/' +
+                            $scope.charmed + '/').
         success(function(data) {
-            data.iPool = $scope.item;
-            data.bPool = $scope.pool;
-            $scope.rolls.unshift(data);
+            $scope.enhanceData = data.results;
         });
     };
 }]);

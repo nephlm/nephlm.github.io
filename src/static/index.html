@@ -47,34 +47,36 @@
 
 		<div class="control">
 			<div>
-				<label>Torm</label>
-				<div class="btn-group" uib-dropdown is-open="status.torOpen">
-					<button class="btn btn-primary" type="button" id="torment-button" uib-dropdown-toggle>
-						{{torment}}
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="torment-button">
-						<li role="menuitem" data-ng-repeat="i in [1,2,3,4,5,6,7,8,9, 10]">
-							<a href="#" ng-click="$parent.torment=i">{{i}}</a>
-						</li>
-					</ul>
+				<div class="clabel"><label>Torm</label></div>
+				<div class="hcenter">
+					<div class="btn-group" uib-dropdown is-open="status.torOpen">
+						<button class="btn btn-primary" type="button" id="torment-button" uib-dropdown-toggle>
+							{{torment}}
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="torment-button">
+							<li role="menuitem" data-ng-repeat="i in [1,2,3,4,5,6,7,8,9, 10]">
+								<a href="#" ng-click="$parent.torment=i">{{i}}</a>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="hcenter hidden">{{torment}}</div>
 			</div>
 			<div>
-				<label>Charm</label>
-				<div class="btn-group" uib-dropdown is-open="status.charOpen">
-					<button class="btn btn-primary" type="button" id="charm-button" uib-dropdown-toggle>
-						{{charmed}}
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="charm-button">
-						<li role="menuitem" data-ng-repeat="i in [0,1,2,3,4,5]">
-							<a href="#" ng-click="$parent.charmed=i">{{i}}</a>
-						</li>
-					</ul>
+				<div class="clabel"><label>Charm</label></div>
+				<div class="hcenter">
+					<div class="btn-group" uib-dropdown is-open="status.charOpen">
+						<button class="btn btn-primary" type="button" id="charm-button" uib-dropdown-toggle>
+							{{charmed}}
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="charm-button">
+							<li role="menuitem" data-ng-repeat="i in [0,1,2,3,4,5]">
+								<a href="#" ng-click="$parent.charmed=i">{{i}}</a>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="hcenter hidden">{{charmed}}</div>
 			</div>
 		</div>
 	</div>
@@ -92,7 +94,7 @@
 			<button class="btn btn-default" ng-click="sim(diff, totalPool, torment, charmed)">Sim</button>
 		</div>
 		<div class="button-container">
-			<button class="btn btn-default" ng-click="enhance(diff, totalPool, torment, charmed)">Enhance</button>
+			<button class="btn btn-default" ng-click="enhance()">Enhance</button>
 		</div>
 	</div>
 
@@ -100,8 +102,8 @@
 
 	<div class="results">
 		<div id="roll" ng-show="show=='roll'">
-			<div class="roll" ng-repeat="roll in rolls track by $index">
-				<label>
+			<div class="roll" ng-repeat="roll in rolls track by $index" ng-click="reroll(roll)" ng-class="isShade(roll)">
+				<label class="roll-label">
 					Pool: {{roll.pool}} =
 					{{roll.bPool}} +
 					{{roll.iPool}};
@@ -126,7 +128,7 @@
 
 		<div id="sim" ng-show="show=='sim'">
 			<p>
-				Expected Success: {{simData.expectedSuccesses}}
+				Expected Success: {{simData.expectedSuccesses | number:1}}
 			</p>
 			<div class="sim-row">
 				<div class="bar-label">Torment:</div>
@@ -160,7 +162,20 @@
 
 
 		<div id="enhance" ng-show="show=='enhance'">
-			Enhance
+			<table>
+			<thead class="shade">
+				<td>Enh Succ</td>
+				<td>Diff</td>
+				<td>Item Bonus</td>
+				<td>Exp Succ</td>
+			</thead>
+			<tr class="success" ng-repeat="s in enhanceData" ng-class-even="'shade'">
+				<td>{{s[0].reqSuccesses}}</td>
+				<td>{{s[0].diff}}</td>
+				<td>{{s[0].tool}}</td>
+				<td>{{s[0].successes |number:2}}</td>
+			</tr>
+			</table>
 		</div>
 
 
