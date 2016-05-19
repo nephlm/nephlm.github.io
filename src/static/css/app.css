@@ -1,31 +1,87 @@
 * {
-    margin: 2px;
-    padding: 2px;
+    margin: 0px;
+    padding: 0px;
 }
 div {
-    border-width: 1px;
-    border-style: solid;
+    border-width: 0px;
+    border-style: none;
 }
 label {
     opacity: 0.5 ;
     font-size: 80%;
     text-align: center;
-    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+.header {
+    margin: .25em;
 }
 #controls {
     vertical-align: top;
+    border-style: solid;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+    margin-top: 3px;
+    margin-bottom: 3px;
 /*    display: inline-block;
     *display: inline;
 */}
 .control {
     vertical-align: top;
     display: inline-block;
+    width: 23%;
+    max-width: 100px;
+}
+.clabel {
+	text-align: center;
 }
 .control-value {
+    font-size: 200%;
 }
 .hcenter {
     text-align: center;
 }
 .arrow {
     font-size: 150%;
+}
+.buttons {
+    border-style: solid;
+    border-bottom-width: 1px;
+    display: inline-block;
+    width:100%;
+    padding-bottom: .25em;
+}
+.button-container {
+    width: 30%;
+    max-width: 133px;
+    text-align: center;
+    float: left;
+}
+
+.hidden {
+    display: none;
+}
+.roll {
+    border-style: solid;
+    border-bottom-width: 1px;
+}
+.sim-bar {
+    color:green;
+}
+.bar {
+    overflow: visible;
+    border-style: none;
+    padding:0;
+    margin:0;
+    margin-left: 5em;
+}
+.bar-label {
+    float: left;
+    width: 4.5em;
+    text-align: right;
+    overflow: hidden;
 }

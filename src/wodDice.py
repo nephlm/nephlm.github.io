@@ -71,7 +71,10 @@ class Roll(object):
          return self.netSuccesses(diff) <= 0 and self.botches > self.charmed
 
     def isTormentRoll(self, diff=None, pTorment=None):
-        return self.torment(diff, pTorment) > self.netSuccesses(diff)/2
+        if self.netSuccesses(diff) > 0:
+            return self.torment(diff, pTorment) > self.netSuccesses(diff)/2
+        else:
+            return False
 
 class RollSim(object):
     def __init__(self, poolSize, diff, pTorment, charmed=0, iterations=10000):

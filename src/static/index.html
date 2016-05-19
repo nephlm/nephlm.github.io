@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="demonDiceApp">
 <meta name="viewport" content="width=device-width">
 <head>
 	<title>Demon Dice Dice Roller</title>
@@ -7,74 +7,163 @@
 	<link rel="stylesheet" href="css/app.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-route.min.js"></script>
+	<script type="text/javascript" src="js/ui-bootstrap-tpls-1.3.2.min.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
 </head>
-<body>
-<p>DemonDice Dice Roller</p>
+<body ng-controller="DemonDiceCtrl">
+<p class="header">DemonDice Dice Roller</p>
 <div class="content-area">
 	<div id="controls">
 		<div class="control">
-			<label>Pool</label>
-			<div class="hcenter arrow">
+			<div class="clabel"><label>Pool</label></div>
+			<div class="hcenter arrow" ng-click="pool=pool+1">
 				<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
 			</div>
-			<div class=" control-vlaue hcenter">#5#</div>
-			<div class="hcenter arrow">
+			<div class=" control-value hcenter">{{pool}}</div>
+			<div class="hcenter arrow"  ng-click="pool=dec(pool)">
 				<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
 			 </div>
 		</div>
 		<div class="control">
-			<label>Tool</label>
-			<div class="hcenter arrow">
+			<div class="clabel"><label>Tool</label></div>
+			<div class="hcenter arrow" ng-click="item=item+1">
 				<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
 			</div>
-			<div class=" control-vlaue hcenter">#5#</div>
-			 <div class="hcenter arrow">
+			<div class=" control-value hcenter">{{item}}</div>
+			 <div class="hcenter arrow" ng-click="item=dec(item)">
 			 	<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
 			 </div>
 		</div>
 		<div class="control">
-			<label>Diff</label>
-			<div class="hcenter arrow">
+			<div class="clabel"><label>Diff</label></div>
+			<div class="hcenter arrow" ng-click="diff=diff+1">
 				<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
 			</div>
-			<div class="control-vlaue hcenter">#5#</div>
-			<div class="hcenter arrow">
+			<div class="control-value hcenter">{{diff}}</div>
+			<div class="hcenter arrow" ng-click="diff=dec(diff)">
 				<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
 			</div>
 		</div>
+
 		<div class="control">
-			<label>Torm</label>
-			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="torment-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					5
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="torment-button">
-					<li>1</li>
-					<li>2</li>
-					<li>3</li>
-					<li>4</li>
-					<li>5</li>
-					<li>6</li>
-					<li>7</li>
-					<li>8</li>
-					<li>9</li>
-					<li>10</li>
-				</ul>
+			<div>
+				<label>Torm</label>
+				<div class="btn-group" uib-dropdown is-open="status.torOpen">
+					<button class="btn btn-primary" type="button" id="torment-button" uib-dropdown-toggle>
+						{{torment}}
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="torment-button">
+						<li role="menuitem" data-ng-repeat="i in [1,2,3,4,5,6,7,8,9, 10]">
+							<a href="#" ng-click="$parent.torment=i">{{i}}</a>
+						</li>
+					</ul>
+				</div>
+				<div class="hcenter hidden">{{torment}}</div>
 			</div>
-			<div class="hcenter">#6#</div>
-			<label>Charm</label>
-			<div class="hcenter">#1#</div>
+			<div>
+				<label>Charm</label>
+				<div class="btn-group" uib-dropdown is-open="status.charOpen">
+					<button class="btn btn-primary" type="button" id="charm-button" uib-dropdown-toggle>
+						{{charmed}}
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="charm-button">
+						<li role="menuitem" data-ng-repeat="i in [0,1,2,3,4,5]">
+							<a href="#" ng-click="$parent.charmed=i">{{i}}</a>
+						</li>
+					</ul>
+				</div>
+				<div class="hcenter hidden">{{charmed}}</div>
+			</div>
 		</div>
 	</div>
+
+
+
+
 	<div class="buttons">
-		<button class="btn btn-default">Roll</button>
-		<button class="btn btn-default">Sim</button>
-		<button class="btn btn-default">Enhance</button>
+		<div class="button-container">
+			<button class="btn btn-default" ng-click="roll(diff, totalPool, torment, charmed)">
+				Roll
+			</button>
+		</div>
+		<div class="button-container">
+			<button class="btn btn-default" ng-click="sim(diff, totalPool, torment, charmed)">Sim</button>
+		</div>
+		<div class="button-container">
+			<button class="btn btn-default" ng-click="enhance(diff, totalPool, torment, charmed)">Enhance</button>
+		</div>
 	</div>
+
+
+
 	<div class="results">
-		Result area
+		<div id="roll" ng-show="show=='roll'">
+			<div class="roll" ng-repeat="roll in rolls track by $index">
+				<label>
+					Pool: {{roll.pool}} =
+					{{roll.bPool}} +
+					{{roll.iPool}};
+					Diff: {{roll.diff}};
+					({{roll.torment}}/{{roll.charmed}})
+				</label>
+				<p>
+					Successes: {{roll.netSuccesses}} <label>({{roll.successes}})</label>
+				</p>
+				<p ng-show="roll.botchRoll">
+					BOTCH
+				</p>
+				<p ng-show="roll.tormentRoll">
+					TORMENT
+				</p>
+				<p>
+					Rolls: {{roll.rolls}}
+				</p>
+			</div>
+		</div>
+
+
+		<div id="sim" ng-show="show=='sim'">
+			<p>
+				Expected Success: {{simData.expectedSuccesses}}
+			</p>
+			<div class="sim-row">
+				<div class="bar-label">Torment:</div>
+				<div>
+				<uib-progressbar class="bar" value="simData.TormentPercent+10">{{simData.TormentPercent}}%
+				</uib-progressbar>
+				</div>
+			</div>
+			<div class="sim-row">
+				<div class="bar-label">Botch:</div>
+				<div>
+				<uib-progressbar class="bar" value="simData.BotchesPercent+10">{{simData.BotchesPercent}}%
+				</uib-progressbar>
+				</div>
+			</div>
+			<div class="sim-row">
+				<div class="bar-label">Failure:</div>
+				<div>
+				<uib-progressbar class="bar" value="simData.FailuresPercent+10">{{simData.FailuresPercent}}%
+				</uib-progressbar>
+				</div>
+			</div>
+			<div class="sim-row" ng-repeat="s in simData.Percent track by $index">
+				<div class="bar-label">{{$index+1}}:</div>
+				<div>
+				<uib-progressbar class="bar" value="s+10">{{s}}%
+				</uib-progressbar>
+				</div>
+			</div>
+		</div>
+
+
+		<div id="enhance" ng-show="show=='enhance'">
+			Enhance
+		</div>
+
+
 	</div>
 </div>
 </body>
