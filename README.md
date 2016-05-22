@@ -3,6 +3,8 @@ WOD Demon (Fallen) dice probability calculator and roller.
 
 This was built to solve the problem of having no idea what the basic probabilities of a WoD, specifically Demon: The Fallen, dice pool were.  The dice roller is thrown in gratis.
 
+If you ignore torment the rest of it should apply to all classic World of Darkness/Storyteller games.  Though they occasionally change the rules so you'll have to compare the rules your comparing against Demon.  The rules changed between oWoD and nWoD, so this will not be useful as anything but a starting point for nWoD.
+
 It uses a webpage as a ui and is a python 3.5.1 wsgi app developed on ubuntu 14.04.  If requirements.txt has been satisfied in your environment, you should be able to go to the ``<repo>/src`` directory and run `python app.py``
 
 This will start the development webserver which should be accessible at ``http://localhost:5000``
