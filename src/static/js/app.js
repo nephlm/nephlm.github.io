@@ -17,14 +17,15 @@ demonDiceApp.controller('DemonDiceCtrl',
     //roll
     $scope.rolls = [];
 
-    //sim
-    $scope.simData = '';
+    //calc
+    $scope.calcData = '';
 
     //enhance
     $scope.enhanceData = '';
 
 
     $scope.dec = function(item) {
+        // decrement with a floor of 0
         return Math.max(item-1, 0);
     };
 
@@ -35,8 +36,11 @@ demonDiceApp.controller('DemonDiceCtrl',
     });
 
     $scope.roll = function(diff, pool, torment, charmed) {
+        // roll a dice pool.  Arguments could be pulled from
+        // $scope.  It was done this way under a thought that
+        // they could be altered while the dice are being rolled
+        // A bit of an overthink for the problem space.
         $scope.show = 'roll';
-        console.log([diff, pool, torment, charmed])
         $http.get('/api/roll/' +
                             diff + '/' +
                             pool + '/' +
@@ -55,6 +59,7 @@ demonDiceApp.controller('DemonDiceCtrl',
     };
 
     $scope.reroll = function(data) {
+        // re-roll a previoiusly rolled dice pool
         $scope.pool = data.bPool;
         $scope.item = data.iPool;
         $scope.diff = data.diff;
@@ -64,15 +69,18 @@ demonDiceApp.controller('DemonDiceCtrl',
     };
 
     $scope.isShade = function (data) {
+        // done here instead of ng-even so each roll will will
+        // retain the same shading as new rolls are added
+        // rather than changing depending on it's place in the array
         if ((data.id % 2) == 0) {
             return "shade";
         }
     };
 
-    $scope.sim = function(diff, pool, torment, charmed) {
-        $scope.show = 'sim';
-        console.log([diff, pool, torment, charmed])
-        $http.get('/api/sim/' +
+    $scope.calc = function(diff, pool, torment, charmed) {
+        // calculate statistics for  a dice pool
+        $scope.show = 'calc';
+        $http.get('/api/calc/' +
                             diff + '/' +
                             pool + '/' +
                             torment + '/' +
@@ -80,11 +88,13 @@ demonDiceApp.controller('DemonDiceCtrl',
         success(function(data) {
             data.iPool = $scope.item;
             data.bPool = $scope.pool;
-            $scope.simData = data;
+            $scope.calcData = data;
         });
     };
 
     $scope.enhance = function() {
+        // Calculate the most advantage and legal use of
+        // enhance for each success level
         $scope.show = 'enhance';
         $http.get('/api/enhance/' +
                             $scope.diff + '/' +
@@ -97,7 +107,7 @@ demonDiceApp.controller('DemonDiceCtrl',
     };
 
     $scope.enhRoll = function(enh) {
-        console.log(enh)
+        // Roll the passed in enhancement level
         $scope.diff = enh[0].diff;
         $scope.item = enh[0].tool;
         $scope.roll($scope.diff, $scope.pool+$scope.item, $scope.torment, $scope.charmed);

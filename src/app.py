@@ -1,9 +1,9 @@
+"""
+Flask request routing.
+"""
+
 import flask
-from flask import Flask, render_template, request
-# from flask.ext.sqlalchemy import SQLAlchemy
-# import logging
-# from logging import Formatter, FileHandler
-# from forms import *
+from flask import Flask
 import os
 
 import wodDice
@@ -14,12 +14,16 @@ app.config.from_object('config')
 
 @app.route('/')
 def index():
+    """ Return the main html page. """
     return app.send_static_file('index.html')
 
 @app.route('/api/roll/<int:diff>/<int:pool>/')
 @app.route('/api/roll/<int:diff>/<int:pool>/<int:torment>/')
 @app.route('/api/roll/<int:diff>/<int:pool>/<int:torment>/<int:charmed>/')
 def roll(diff, pool, torment=5, charmed=0):
+    """
+    api call to get a single roll of a dice pool.
+    """
     r = wodDice.Roll(pool , diff, torment, charmed)
     result = {
         'pool': pool,
@@ -36,12 +40,14 @@ def roll(diff, pool, torment=5, charmed=0):
     }
     return flask.json.jsonify(result)
 
-@app.route('/api/sim/<int:diff>/<int:pool>/')
-@app.route('/api/sim/<int:diff>/<int:pool>/<int:torment>/')
-@app.route('/api/sim/<int:diff>/<int:pool>/<int:torment>/<int:charmed>/')
-def sim(diff, pool, torment=5, charmed=1):
-    # s = wodDice.RollSim(pool, diff, torment, charmed)
-    root = wodDice.Root(pool, diff, torment, charmed)
+@app.route('/api/calc/<int:diff>/<int:pool>/')
+@app.route('/api/calc/<int:diff>/<int:pool>/<int:torment>/')
+@app.route('/api/calc/<int:diff>/<int:pool>/<int:torment>/<int:charmed>/')
+def calc(diff, pool, torment=5, charmed=1):
+    """
+    api call to get the probabilities of a dice pool.
+    """
+    root = wodDice.PoolCalc(pool, diff, torment, charmed)
     s = root.summary()
     result = {
         'pool': pool,
@@ -59,6 +65,10 @@ def sim(diff, pool, torment=5, charmed=1):
 @app.route('/api/enhance/<int:diff>/<int:pool>/<int:tool>/')
 @app.route('/api/enhance/<int:diff>/<int:pool>/<int:tool>/<int:charmed>/')
 def enhance(diff, pool, tool, charmed=1):
+    """
+    api call that finds the most advantagous use of Forge 1 evocation
+    for each viable success level using the rules from the players guide.
+    """
     torment =0
     enh = []
     last = []
@@ -72,7 +82,7 @@ def enhance(diff, pool, tool, charmed=1):
             if (enhTool > tool*2) or (enhDiff < 3):
                 continue
             # s = wodDice.RollSim(pool+enhTool, enhDiff, torment, charmed)
-            node = wodDice.Root(pool+enhTool, enhDiff, torment, charmed)
+            node = wodDice.PoolCalc(pool+enhTool, enhDiff, torment, charmed)
             s = node.summary()
             last.append({'diff': enhDiff,
                         'pool': pool,
@@ -88,18 +98,6 @@ def enhance(diff, pool, tool, charmed=1):
             enh.append(last)
     return flask.json.jsonify({'results': enh})
 
-
-
-
-
-# @app.errorhandler(404)
-# def not_found_error(error):
-#     return render_template('errors/404.html'), 404
-
-
-# # Default port:
-# if __name__ == '__main__':
-#     app.run()
 
 # Or specify port manually:
 if __name__ == '__main__':

@@ -100,10 +100,10 @@ thead {
 .roll-label {
     cursor: pointer;
 }
-#sim {
+#calc {
     padding-left: .25em;
 }
-.sim-bar {
+.calc-bar {
     color:green;
 }
 .bar {

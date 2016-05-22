@@ -1,42 +1,73 @@
+"""
+Module to roll and calculate the probability for dice pools in
+White Wolf's Demon: The Fallen.
+"""
+
 import random
-import argparse
 
-
-PERMENANT_TORMENT = 5
-CHARMED = 1
 
 class D10(object):
+    """
+    Single roll of a single D10.
+    """
     def __init__(self):
         self.roll = random.randint(1,10)
 
     @property
     def botch(self):
+        """@returns: bool -- the roll is a botch"""
         return self.roll == 1
 
     def success(self, diff):
+        """@returns: bool -- the roll is a success"""
         return self.roll >= diff
 
     def torment(self, diff, pTorment):
+        """@returns: bool -- the roll is a tormented success"""
         return self.success(diff) and self.roll < pTorment
 
 
 class Roll(object):
+    """
+    A single roll of a dice pool.
+    """
     def __init__(self, poolSize, diff, pTorment, charmed=0):
+        """
+        Roll of a dicepool.
+        @param poolSize: int -- size of pool to roll
+        @param diff: int -- difficulty of the roll
+        @param pTorment: int -- permanent torment. If more than half of
+                    successses are below this number the roll is tormented.
+        @param charmed: int -- level of charmed existence; I don't know
+                    a way to get more than one, but just in case.
+        """
         self.poolSize = poolSize
         self.diff = diff
         self.pTorment = pTorment
         self.charmed = charmed
         self.dice = []
-        for i in range(self.poolSize):
+        for _ in range(self.poolSize):
             self.dice.append(D10())
 
 
     @property
     def sortedDice(self):
+        """
+        Sort the dice from high to low.
+
+        @return: sorted list of D10 objects.
+        """
         return sorted([x.roll for x in self.dice], reverse=True)
 
 
     def successes(self, diff=None):
+        """
+        Number of successes without considering botches.
+
+        @diff: int: difficulty of the roll.
+
+        @return: int -- Total number of successful D10s.
+        """
         if not diff:
             diff = self.diff
         total = 0
@@ -46,6 +77,14 @@ class Roll(object):
         return total
 
     def torment(self, diff=None, pTorment=None):
+        """
+        Number of tormented successes.
+
+        @diff: int -- difficulty of the roll.
+        @pTorment: int -- permanent torment.
+
+        @return: int -- Total number of tormented D10s.
+        """
         if not pTorment:
             pTorment = self.pTorment
         if not diff:
@@ -58,6 +97,11 @@ class Roll(object):
 
     @property
     def botches(self):
+        """
+        Number of botches.
+
+        @return: int -- Total number of botched D10s.
+        """
         total = 0
         for die in self.dice:
             if die.botch:
@@ -65,88 +109,68 @@ class Roll(object):
         return total
 
     def netSuccesses(self, diff=None):
+        """
+        Number of successes when considering botches.
+
+        @diff: int: difficulty of the roll.
+
+        @return: int -- Total number of successful D10s minus
+                    total number of botches.  Botches is adjusted
+                    by level of charm if any.
+        """
         return self.successes(diff) - max(0, (self.botches - self.charmed))
 
     def isBotchRoll(self, diff=None):
-         return self.successes(diff) <= 0 and self.botches > self.charmed
-         # return self.netSuccesses(diff) < 0 and self.botches > self.charmed
+        """
+        Whether the roll as a hole is botched (No successes and at least
+                one more botched die than  levels of charmed).
+
+        @diff: int: difficulty of the roll.
+
+        @return: bool -- True if the roll is botched.
+        """
+        return self.successes(diff) <= 0 and self.botches > self.charmed
 
     def isTormentRoll(self, diff=None, pTorment=None):
+        """
+        Whether the roll as a hole is tormented (Successful and more
+            tormented dice than untormented successes.  botches
+            remove from untormented successes first).
+
+        @diff: int: difficulty of the roll.
+        @pTorment: int -- permanent torment.
+
+        @return: bool -- True if the roll is tormented.
+        """
         if self.netSuccesses(diff) > 0:
             return self.torment(diff, pTorment) > self.netSuccesses(diff)/2
         else:
             return False
 
-class RollSim(object):
-    def __init__(self, poolSize, diff, pTorment, charmed=0, iterations=10000):
-        self.poolSize = poolSize
-        self.diff = diff
-        self.pTorment = pTorment
-        self.charmed = charmed
-        self._iterations = iterations
-        self.successes = [0 for x in range(self.poolSize + 1)]
-        self.failures = 0
-        self.botches = 0
-        self.torment = 0
 
-        self.sim()
-
-    @property
-    def successPercent(self):
-        return list(map(self._percent, self.successes[1:]))
-
-    @property
-    def failurePercent(self):
-        return self._percent(self.failures)
-
-    @property
-    def botchPercent(self):
-        return self._percent(self.botches)
-
-    @property
-    def tormentPercent(self):
-        return self._percent(self.torment)
-
-    @property
-    def expectedSuccesses(self):
-        return sum([y/float(self._iterations)*x for x,y in enumerate(self.successes)])
-
-    def sim(self):
-        for _ in range(self._iterations):
-            roll = Roll(self.poolSize, self.diff, self.pTorment, self.charmed)
-            if roll.netSuccesses() <= 0:
-                self.failures += 1
-                if roll.isBotchRoll():
-                    self.botches += 1
-            else:
-                self.successes[roll.netSuccesses()] += 1
-                if roll.isTormentRoll():
-                    self.torment += 1
-
-    def _percent(self, catCount):
-        return catCount/(self._iterations/100)
-
-class SimCache(dict):
-
-    def getSim(self, pool, diff, torment, charmed, iterations=10000):
-        try:
-            return self[(pool, diff, torment, charmed, iterations)]
-        except KeyError:
-            simObj = RollSim(pool, diff, torment, charmed, iterations)
-            self[(pool, diff, torment, charmed, iterations)] = simObj
-            return simObj
-
-class Root(object):
+class PoolCalc(object):
+    """
+    calculate probabilities of the dice pool.
+    """
     BOTCH = 0
     FAIL = 1
     TORMENT = 2
     SUCCESS = 3
+
     def __init__(self, pool, diff, torment, charmed):
+        """
+        @param poolSize: int -- size of pool to roll
+        @param diff: int -- difficulty of the roll
+        @param pTorment: int -- permanent torment. If more than half of
+                    successses are below this number the roll is tormented.
+        @param charmed: int -- level of charmed existence; I don't know
+                    a way to get more than one, but just in case.
+        """
         self.pool =pool
         self.diff = diff
         self.torment = torment
         self.charmed = charmed
-        self.tier = {(0,0,0,0): 1.0}
+        self.tier = {(0,0,0,0): 1.0}  # See populate()
 
         self.pBotch = .1
         self.pFail = (diff -2) * .1
@@ -163,29 +187,70 @@ class Root(object):
         self.populate()
 
     def populate(self):
-        for x in range(self.pool):
+        """
+        Iteratively calculate the probability of each die.
+        This builds a quasi tree that collapses any effectively
+        identical branches.  Thus a branch that rolled a botch
+        and then a success is merged with a branch that rolled a
+        success and then a botch.
+
+        The leaf nodes are stored as the self tier dict.
+
+        The key is a four element tuple:
+
+            (numBotches, numFailures, numTorments, numSuccesses)
+
+        While botches and torments are respectively failures and
+        successes, for the purpose of the key all categories are
+        mutually exclusive.
+
+        The value is the probability of that outcome.
+        """
+        for _ in range(self.pool):
             newTier = {}
             for key, baseProb in self.tier.items():
                 for branch in range(4):
                     newProb = baseProb * self.pDict[branch]
                     if newProb == 0.0:
                         continue
-                    newKey = list(key[:])
+                    newKey = list(key[:])  # make a mutable copy of the key
                     newKey[branch] += 1
-                    newKey = tuple(newKey)
+                    newKey = tuple(newKey) # make it hashable again
                     newTier[newKey] = newTier.get(newKey, 0.0) + newProb
             self.tier = newTier
             # print(self.tier)
 
     def isBotch(self, key):
+        """
+        Check if the key is a botched roll.
+
+        @param key: tuple -- The key to check to see if it is a botched roll.
+
+        @returns: bool -- Returns true if the key represent  a
+                botched roll.
+        """
         return key[self.BOTCH] > self.charmed and key[self.SUCCESS] == 0
 
     def isTorment(self, key, netBotches):
-        # print('goodNetSuccess: {}'.format(outcome['success'] - netBotches))
+        """
+        Check if the key is a tormented roll.
+
+        @param key: tuple -- The key to check to see if it is a tormented roll.
+
+        @returns: bool -- Returns true if the key represent  a
+                tormented roll.
+        """
         return (key[self.SUCCESS] - netBotches) < key[self.TORMENT] and \
                 (key[self.SUCCESS] - netBotches) + key[self.TORMENT] > 0
 
     def summary(self):
+        """
+        Iterate over all the the outcomes in the dice pool and
+        calculate probabilities of botch, torment, failure, success
+        levels.
+
+        @returns: dict -- calculated probabilities.
+        """
         keys = self.tier.keys()
         botchProb = 0
         tormentProb = 0
@@ -216,208 +281,5 @@ class Root(object):
             'pool': self.pool,
             'tormentVal': self.torment,
         }
-
-
-
-
-class Node(object):
-
-    def __init__(self, pool, diff, torment, charmed, path=None):
-        self.pool =pool
-        self.diff = diff
-        self.torment = torment
-        self.charmed = charmed
-        self.pBotch = .1
-        self.pFail = (diff -2) * .1
-        self.pTorment = max(0, (torment - diff) * .1)
-        self.pSuccess = (1 + (10 - max(torment, diff))) * .1
-        if path is None:
-            self.path = []
-        else:
-            self.path = path
-        self.children = []
-        self.pDict = {
-            'botch': self.pBotch,
-            'failure': self.pFail,
-            'torment': self.pTorment,
-            'success': self.pSuccess,
-        }
-        self.baseBotches = len([x for x in self.path if x=='botch'])
-        self.baseFailures = len([x for x in self.path if x=='failure'])
-        self.baseTorments = len([x for x in self.path if x=='torment'])
-        self.baseSuccesses = len([x for x in self.path if x=='success'])
-        self.populate()
-
-    def populate(self):
-        if not self.children and self.pool > 1:
-            for step in ['botch', 'failure', 'torment', 'success']:
-                self.children.append(Node(self.pool-1, self.diff, self.torment,
-                                            self.charmed, self.path + [step]))
-            for child in self.children:
-                child.populate()
-
-    def pathProb(self):
-        prob = 1
-        for step in self.path:
-            prob *= self.pDict[step]
-        return prob
-
-    def isLeaf(self):
-        return not self.children
-
-    @staticmethod
-    def match(step, val):
-        return 1 if step==val else 0
-
-    def summary(self):
-        if self.isLeaf():
-            # print('leaf- {}'.format(self.path))
-            paths = []
-            for step in ['botch', 'failure', 'torment', 'success']:
-                if self.pathProb() * self.pDict[step] > 0.00001:
-                    paths.append({
-                        'botch': self.baseBotches + self.match(step, 'botch'),
-                        'failure': self.baseFailures + self.match(step, 'failure'),
-                        'torment': self.baseTorments + self.match(step, 'torment'),
-                        'success': self.baseSuccesses + self.match(step, 'success'),
-                        'prob': self.pathProb() * self.pDict[step]
-                    })
-                # print(paths[-1])
-            return paths
-        else:
-            # print('graph- {}'.format(self.path))
-            outcomes = []
-            for child in self.children:
-                outcomes = outcomes + child.summary()
-            return outcomes
-
-    def isBotch(self, outcome):
-        return outcome['botch'] > self.charmed and outcome['success'] == 0
-
-    def isTorment(self, outcome, netBotches):
-        # print('goodNetSuccess: {}'.format(outcome['success'] - netBotches))
-        return (outcome['success'] - netBotches) < outcome['torment'] and \
-                (outcome['success'] - netBotches) + outcome['torment'] > 0
-
-    def rootSummary(self):
-        outcomes = self.summary()
-        botchProb = 0
-        tormentProb = 0
-        successes = []
-        for outcome in outcomes:
-            # print(outcome)
-            netBotches = max(0, outcome['botch'] - self.charmed)
-            # print('isTorment: {}'.format(self.isTorment(outcome, netBotches)))
-            netSuccesses = outcome['torment'] + outcome['success'] - netBotches
-            if self.isBotch(outcome):
-                botchProb += outcome['prob']
-            if self.isTorment(outcome, netBotches) and netSuccesses > 0:
-                tormentProb += outcome['prob']
-            try:
-                successes[netSuccesses] += outcome['prob']
-            except IndexError:
-                successes.extend([0 for _ in range(netSuccesses - len(successes))])
-                successes.append(outcome['prob'])
-        return {
-            'botch': botchProb,
-            'torment': tormentProb,
-            'success': successes,
-            'totalFail': botchProb + successes[0],
-            'totalSuccess': sum(successes[1:]),
-            'expectedSuccesses': sum([i*n for i,n in enumerate(successes)]),
-            'charmed': self.charmed,
-            'diff': self.diff,
-            'pool': self.pool,
-            'tormentVal': self.torment,
-        }
-
-
-
-
-
-
-
-
-
-
-
-def roll(dicePool, diff):
-
-    r = Roll(dicePool, diff, PERMENANT_TORMENT, CHARMED)
-    print(r.sortedDice)
-    print('Successes: %s' % r.successes())
-    print('Botches: %s' % r.botches)
-    print('Torment: %s' % r.torment())
-    print('NetSuccesses: %s' % r.netSuccesses())
-    if r.isBotchRoll():
-        print('BOTCH!')
-    elif r.isTormentRoll():
-        print('TORMENT!')
-
-def sim(dicePool, diff):
-    sim = RollSim(dicePool, diff, PERMENANT_TORMENT, CHARMED)
-    print('Failures: %s - %s%%' % (sim.failures, sim.failurePercent))
-    print('Botches: %s - %s%%' % (sim.botches, sim.botchPercent))
-    print('Torment: %s - %s%%' % (sim.torment, sim.tormentPercent))
-    print('Successes: %s' % str(sim.successes[1:]))
-    print('Percent: %s' % ['%s%%' % x for x in sim.successPercent])
-
-    print(sim.expectedSuccesses)
-
-def enhance(dicePool, diff, enhanceNum, maxAddDice=None):
-    if maxAddDice is None:
-        maxAddDice = dicePool
-    maxDicePool = dicePool + maxAddDice
-    torment = PERMENANT_TORMENT
-
-    for elvl in range(enhanceNum):
-        print('\nEnhance Level: %s' % (elvl +1))
-        if diff <= 2 and dicePool < maxDicePool:
-            c1 = RollSim(dicePool+1, diff, torment)
-            print('dicePool=%s; diff=%s: %s' % (c1.poolSize, c1.diff, c1.expectedSuccesses))
-            dicePool +=1
-            continue
-        elif diff > 2 and dicePool >= maxDicePool:
-            c2 = RollSim(dicePool, diff-1, torment)
-            print('dicePool=%s; diff=%s: %s' % (c2.poolSize, c2.diff, c2.expectedSuccesses))
-            diff -= 1
-            continue
-        elif diff > 2 and dicePool < maxDicePool:
-            c1 = RollSim(dicePool+1, diff, torment)
-            print('dicePool=%s; diff=%s: %s' % (c1.poolSize, c1.diff, c1.expectedSuccesses))
-            c2 = RollSim(dicePool, diff-1, torment)
-            print('dicePool=%s; diff=%s: %s' % (c2.poolSize, c2.diff, c2.expectedSuccesses))
-            if c1.expectedSuccesses > c2.expectedSuccesses:
-                dicePool += 1
-            else:
-                diff -= 1
-        else:
-            print('Max Enhance')
-            break
-
-
-def parseCLI():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('dice', type=int,
-                        help="Number of dice to roll.")
-    parser.add_argument('--sim', '-s', action='store_true',
-                       help='Monte Carlo roll simulation')
-    parser.add_argument('--diff', '-d', type=int, default=6,
-                       help='Difficulty of the roll')
-    parser.add_argument('--enhance', '-e', type=int, default=None,
-                       help='Find optimal enhance plan.')
-    return parser.parse_args()
-
-
-if __name__ == '__main__':
-    args = parseCLI()
-    dicePool = args.dice
-    diff = args.diff
-    if args.sim:
-        sim(dicePool, diff)
-    elif args.enhance:
-        enhance(dicePool, diff, args.enhance)
-    else:
-        roll(dicePool, diff)
 
 

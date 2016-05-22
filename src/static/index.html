@@ -91,7 +91,7 @@
 			</button>
 		</div>
 		<div class="button-container">
-			<button class="btn btn-default" ng-click="sim(diff, totalPool, torment, charmed)">Sim</button>
+			<button class="btn btn-default" ng-click="calc(diff, totalPool, torment, charmed)">calc</button>
 		</div>
 		<div class="button-container">
 			<button class="btn btn-default" ng-click="enhance()">Enhance</button>
@@ -126,32 +126,32 @@
 		</div>
 
 
-		<div id="sim" ng-show="show=='sim'">
+		<div id="calc" ng-show="show=='calc'">
 			<p>
-				Expected Success: {{simData.expectedSuccesses | number:1}}
+				Expected Success: {{calcData.expectedSuccesses | number:1}}
 			</p>
-			<div class="sim-row">
+			<div class="calc-row">
 				<div class="bar-label">Torment:</div>
 				<div>
-				<uib-progressbar class="bar" value="simData.TormentPercent*100+10">{{simData.TormentPercent*100 | number:2}}%
+				<uib-progressbar class="bar" value="calcData.TormentPercent*100+10">{{calcData.TormentPercent*100 | number:2}}%
 				</uib-progressbar>
 				</div>
 			</div>
-			<div class="sim-row">
+			<div class="calc-row">
 				<div class="bar-label">Botch:</div>
 				<div>
-				<uib-progressbar class="bar" value="simData.BotchesPercent*100+10">{{simData.BotchesPercent*100 | number:2}}%
+				<uib-progressbar class="bar" value="calcData.BotchesPercent*100+10">{{calcData.BotchesPercent*100 | number:2}}%
 				</uib-progressbar>
 				</div>
 			</div>
-			<div class="sim-row">
+			<div class="calc-row">
 				<div class="bar-label">Failure:</div>
 				<div>
-				<uib-progressbar class="bar" value="simData.FailuresPercent*100+10">{{simData.FailuresPercent*100 | number:2}}%
+				<uib-progressbar class="bar" value="calcData.FailuresPercent*100+10">{{calcData.FailuresPercent*100 | number:2}}%
 				</uib-progressbar>
 				</div>
 			</div>
-			<div class="sim-row" ng-repeat="s in simData.Percent track by $index">
+			<div class="calc-row" ng-repeat="s in calcData.Percent track by $index">
 				<div class="bar-label">{{$index+1}}:</div>
 				<div>
 				<uib-progressbar class="bar" value="s*100+10">{{s*100 | number:2}}%
@@ -165,14 +165,14 @@
 			<table>
 			<thead class="shade">
 				<td>Enh Succ</td>
-				<td>Diff</td>
 				<td>Item Bonus</td>
+				<td>Diff</td>
 				<td>Exp Succ</td>
 			</thead>
 			<tr class="success" ng-repeat="s in enhanceData" ng-class-even="'shade'" ng-click="enhRoll(s)">
 				<td>{{s[0].reqSuccesses}}</td>
-				<td>{{s[0].diff}}</td>
 				<td>{{s[0].tool}}</td>
+				<td>{{s[0].diff}}</td>
 				<td>{{s[0].successes |number:2}}</td>
 			</tr>
 			</table>
