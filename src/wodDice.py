@@ -68,7 +68,8 @@ class Roll(object):
         return self.successes(diff) - max(0, (self.botches - self.charmed))
 
     def isBotchRoll(self, diff=None):
-         return self.netSuccesses(diff) <= 0 and self.botches > self.charmed
+         return self.successes(diff) <= 0 and self.botches > self.charmed
+         # return self.netSuccesses(diff) < 0 and self.botches > self.charmed
 
     def isTormentRoll(self, diff=None, pTorment=None):
         if self.netSuccesses(diff) > 0:
@@ -124,6 +125,216 @@ class RollSim(object):
 
     def _percent(self, catCount):
         return catCount/(self._iterations/100)
+
+class SimCache(dict):
+
+    def getSim(self, pool, diff, torment, charmed, iterations=10000):
+        try:
+            return self[(pool, diff, torment, charmed, iterations)]
+        except KeyError:
+            simObj = RollSim(pool, diff, torment, charmed, iterations)
+            self[(pool, diff, torment, charmed, iterations)] = simObj
+            return simObj
+
+class Root(object):
+    BOTCH = 0
+    FAIL = 1
+    TORMENT = 2
+    SUCCESS = 3
+    def __init__(self, pool, diff, torment, charmed):
+        self.pool =pool
+        self.diff = diff
+        self.torment = torment
+        self.charmed = charmed
+        self.tier = {(0,0,0,0): 1.0}
+
+        self.pBotch = .1
+        self.pFail = (diff -2) * .1
+        self.pTorment = max(0, (torment - diff) * .1)
+        self.pSuccess = (1 + (10 - max(torment, diff))) * .1
+        self.children = []
+        self.pDict = {
+            self.BOTCH: self.pBotch,
+            self.FAIL: self.pFail,
+            self.TORMENT: self.pTorment,
+            self.SUCCESS: self.pSuccess,
+        }
+
+        self.populate()
+
+    def populate(self):
+        for x in range(self.pool):
+            newTier = {}
+            for key, baseProb in self.tier.items():
+                for branch in range(4):
+                    newProb = baseProb * self.pDict[branch]
+                    if newProb == 0.0:
+                        continue
+                    newKey = list(key[:])
+                    newKey[branch] += 1
+                    newKey = tuple(newKey)
+                    newTier[newKey] = newTier.get(newKey, 0.0) + newProb
+            self.tier = newTier
+            # print(self.tier)
+
+    def isBotch(self, key):
+        return key[self.BOTCH] > self.charmed and key[self.SUCCESS] == 0
+
+    def isTorment(self, key, netBotches):
+        # print('goodNetSuccess: {}'.format(outcome['success'] - netBotches))
+        return (key[self.SUCCESS] - netBotches) < key[self.TORMENT] and \
+                (key[self.SUCCESS] - netBotches) + key[self.TORMENT] > 0
+
+    def summary(self):
+        keys = self.tier.keys()
+        botchProb = 0
+        tormentProb = 0
+        successes = []
+        for key in keys:
+            # print(key)
+            netBotches = max(0, key[self.BOTCH] - self.charmed)
+            # print('isTorment: {}'.format(self.isTorment(outcome, netBotches)))
+            netSuccesses = max(0,key[self.TORMENT] + key[self.SUCCESS] - netBotches)
+            if self.isBotch(key):
+                botchProb += self.tier[key]
+            if self.isTorment(key, netBotches) and netSuccesses > 0:
+                tormentProb += self.tier[key]
+            try:
+                successes[netSuccesses] += self.tier[key]
+            except IndexError:
+                successes.extend([0 for _ in range(netSuccesses - len(successes))])
+                successes.append(self.tier[key])
+        return {
+            'botch': botchProb,
+            'torment': tormentProb,
+            'success': successes,
+            'totalFail': botchProb + successes[0],
+            'totalSuccess': sum(successes[1:]),
+            'expectedSuccesses': sum([i*n for i,n in enumerate(successes)]),
+            'charmed': self.charmed,
+            'diff': self.diff,
+            'pool': self.pool,
+            'tormentVal': self.torment,
+        }
+
+
+
+
+class Node(object):
+
+    def __init__(self, pool, diff, torment, charmed, path=None):
+        self.pool =pool
+        self.diff = diff
+        self.torment = torment
+        self.charmed = charmed
+        self.pBotch = .1
+        self.pFail = (diff -2) * .1
+        self.pTorment = max(0, (torment - diff) * .1)
+        self.pSuccess = (1 + (10 - max(torment, diff))) * .1
+        if path is None:
+            self.path = []
+        else:
+            self.path = path
+        self.children = []
+        self.pDict = {
+            'botch': self.pBotch,
+            'failure': self.pFail,
+            'torment': self.pTorment,
+            'success': self.pSuccess,
+        }
+        self.baseBotches = len([x for x in self.path if x=='botch'])
+        self.baseFailures = len([x for x in self.path if x=='failure'])
+        self.baseTorments = len([x for x in self.path if x=='torment'])
+        self.baseSuccesses = len([x for x in self.path if x=='success'])
+        self.populate()
+
+    def populate(self):
+        if not self.children and self.pool > 1:
+            for step in ['botch', 'failure', 'torment', 'success']:
+                self.children.append(Node(self.pool-1, self.diff, self.torment,
+                                            self.charmed, self.path + [step]))
+            for child in self.children:
+                child.populate()
+
+    def pathProb(self):
+        prob = 1
+        for step in self.path:
+            prob *= self.pDict[step]
+        return prob
+
+    def isLeaf(self):
+        return not self.children
+
+    @staticmethod
+    def match(step, val):
+        return 1 if step==val else 0
+
+    def summary(self):
+        if self.isLeaf():
+            # print('leaf- {}'.format(self.path))
+            paths = []
+            for step in ['botch', 'failure', 'torment', 'success']:
+                if self.pathProb() * self.pDict[step] > 0.00001:
+                    paths.append({
+                        'botch': self.baseBotches + self.match(step, 'botch'),
+                        'failure': self.baseFailures + self.match(step, 'failure'),
+                        'torment': self.baseTorments + self.match(step, 'torment'),
+                        'success': self.baseSuccesses + self.match(step, 'success'),
+                        'prob': self.pathProb() * self.pDict[step]
+                    })
+                # print(paths[-1])
+            return paths
+        else:
+            # print('graph- {}'.format(self.path))
+            outcomes = []
+            for child in self.children:
+                outcomes = outcomes + child.summary()
+            return outcomes
+
+    def isBotch(self, outcome):
+        return outcome['botch'] > self.charmed and outcome['success'] == 0
+
+    def isTorment(self, outcome, netBotches):
+        # print('goodNetSuccess: {}'.format(outcome['success'] - netBotches))
+        return (outcome['success'] - netBotches) < outcome['torment'] and \
+                (outcome['success'] - netBotches) + outcome['torment'] > 0
+
+    def rootSummary(self):
+        outcomes = self.summary()
+        botchProb = 0
+        tormentProb = 0
+        successes = []
+        for outcome in outcomes:
+            # print(outcome)
+            netBotches = max(0, outcome['botch'] - self.charmed)
+            # print('isTorment: {}'.format(self.isTorment(outcome, netBotches)))
+            netSuccesses = outcome['torment'] + outcome['success'] - netBotches
+            if self.isBotch(outcome):
+                botchProb += outcome['prob']
+            if self.isTorment(outcome, netBotches) and netSuccesses > 0:
+                tormentProb += outcome['prob']
+            try:
+                successes[netSuccesses] += outcome['prob']
+            except IndexError:
+                successes.extend([0 for _ in range(netSuccesses - len(successes))])
+                successes.append(outcome['prob'])
+        return {
+            'botch': botchProb,
+            'torment': tormentProb,
+            'success': successes,
+            'totalFail': botchProb + successes[0],
+            'totalSuccess': sum(successes[1:]),
+            'expectedSuccesses': sum([i*n for i,n in enumerate(successes)]),
+            'charmed': self.charmed,
+            'diff': self.diff,
+            'pool': self.pool,
+            'tormentVal': self.torment,
+        }
+
+
+
+
+
 
 
 

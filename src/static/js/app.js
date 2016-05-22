@@ -95,4 +95,11 @@ demonDiceApp.controller('DemonDiceCtrl',
             $scope.enhanceData = data.results;
         });
     };
+
+    $scope.enhRoll = function(enh) {
+        console.log(enh)
+        $scope.diff = enh[0].diff;
+        $scope.item = enh[0].tool;
+        $scope.roll($scope.diff, $scope.pool+$scope.item, $scope.torment, $scope.charmed);
+    }
 }]);

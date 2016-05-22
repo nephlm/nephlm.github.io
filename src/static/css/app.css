@@ -17,6 +17,12 @@ p {
     margin: 0;
     padding: 0;
 }
+tr {
+    cursor: pointer;
+}
+tr:hover {
+    background-color: #fff5f5;
+}
 td {
     padding: .25em;
     text-align: center;

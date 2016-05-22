@@ -40,21 +40,19 @@ def roll(diff, pool, torment=5, charmed=0):
 @app.route('/api/sim/<int:diff>/<int:pool>/<int:torment>/')
 @app.route('/api/sim/<int:diff>/<int:pool>/<int:torment>/<int:charmed>/')
 def sim(diff, pool, torment=5, charmed=1):
-    s = wodDice.RollSim(pool, diff, torment, charmed)
+    # s = wodDice.RollSim(pool, diff, torment, charmed)
+    root = wodDice.Root(pool, diff, torment, charmed)
+    s = root.summary()
     result = {
         'pool': pool,
         'diff': diff,
         'torment': torment,
         'charmed': charmed,
-        'Failures': s.failures,
-        'Botches': s.botches,
-        'Torment': s.torment,
-        'FailuresPercent': s.failurePercent,
-        'BotchesPercent': s.botchPercent,
-        'TormentPercent': s.tormentPercent,
-        'Successes':s.successes[1:],
-        'Percent': s.successPercent,
-        'expectedSuccesses': s.expectedSuccesses,
+        'FailuresPercent': s['totalFail'],
+        'BotchesPercent': s['botch'],
+        'TormentPercent': s['torment'],
+        'Percent': s['success'][1:],
+        'expectedSuccesses': s['expectedSuccesses'],
     }
     return flask.json.jsonify(result)
 
@@ -73,14 +71,16 @@ def enhance(diff, pool, tool, charmed=1):
             enhTool = tool + (successes-i)
             if (enhTool > tool*2) or (enhDiff < 3):
                 continue
-            s = wodDice.RollSim(pool+enhTool, enhDiff, torment, charmed)
+            # s = wodDice.RollSim(pool+enhTool, enhDiff, torment, charmed)
+            node = wodDice.Root(pool+enhTool, enhDiff, torment, charmed)
+            s = node.summary()
             last.append({'diff': enhDiff,
                         'pool': pool,
                         'tool': enhTool,
                         'charmed': charmed,
                         'torment': torment,
                         'reqSuccesses': successes,
-                        'successes': s.expectedSuccesses})
+                        'successes': s['expectedSuccesses']})
         if not last:
             break
         else:
