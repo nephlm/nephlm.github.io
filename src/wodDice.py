@@ -273,7 +273,7 @@ class PoolCalc(object):
             'botch': botchProb,
             'torment': tormentProb,
             'success': successes,
-            'totalFail': botchProb + successes[0],
+            'totalFail': successes[0],
             'totalSuccess': sum(successes[1:]),
             'expectedSuccesses': sum([i*n for i,n in enumerate(successes)]),
             'charmed': self.charmed,

@@ -41,6 +41,19 @@ demonDiceApp.controller('DemonDiceCtrl',
         // they could be altered while the dice are being rolled
         // A bit of an overthink for the problem space.
         $scope.show = 'roll';
+        data = roll(diff, pool, torment, charmed);
+        data.iPool = $scope.item;
+        data.bPool = $scope.pool;
+        data.id = $scope.id;
+        $scope.id++;
+        $scope.rolls.unshift(data);
+        if ($scope.rolls.length > 30) {
+            $scope.rolls.length = 30
+        };
+    };
+
+/*
+
         $http.get('/api/roll/' +
                             diff + '/' +
                             pool + '/' +
@@ -56,7 +69,7 @@ demonDiceApp.controller('DemonDiceCtrl',
                 $scope.rolls.length = 30
             };
         });
-    };
+*/
 
     $scope.reroll = function(data) {
         // re-roll a previoiusly rolled dice pool
@@ -80,30 +93,18 @@ demonDiceApp.controller('DemonDiceCtrl',
     $scope.calc = function(diff, pool, torment, charmed) {
         // calculate statistics for  a dice pool
         $scope.show = 'calc';
-        $http.get('/api/calc/' +
-                            diff + '/' +
-                            pool + '/' +
-                            torment + '/' +
-                            charmed + '/').
-        success(function(data) {
-            data.iPool = $scope.item;
-            data.bPool = $scope.pool;
-            $scope.calcData = data;
-        });
+        data = calc(pool, diff, torment, charmed);
+        data.iPool = $scope.item;
+        data.bPool = $scope.pool;
+        $scope.calcData = data;
     };
 
     $scope.enhance = function() {
         // Calculate the most advantage and legal use of
         // enhance for each success level
         $scope.show = 'enhance';
-        $http.get('/api/enhance/' +
-                            $scope.diff + '/' +
-                            $scope.pool + '/' +
-                            $scope.item + '/' +
-                            $scope.charmed + '/').
-        success(function(data) {
-            $scope.enhanceData = data.results;
-        });
+        data = enhance($scope.diff, $scope.pool, $scope.item, $scope.charmed);
+        $scope.enhanceData = data;
     };
 
     $scope.enhRoll = function(enh) {
