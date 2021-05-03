@@ -1,0 +1,75 @@
+'http://www.logrus.com/%7Emoose/page1/files/hexbones.pdf'
+
+{
+ 0: .375, 1: .375, 2: .25
+}
+
+{1:
+    {'title': 'The Stranger ',
+    'text': 'The Stranger is a lone figure in an empty plain. His strength , motivation and importance come from within, but his weakness come in his lack of ties to those around him. The Stranger is never a welcome figure. ',
+    0: {'title': "The Mystery",
+        'text': "The Mystery is a question to be answered, usually one of great importance. It may be a secret to be revealed, a crime to be solved or something lost to be found, but there is a great unknown that must be come known to allow further progress. "},
+    1: {'title': "The Menace",
+        'text': "The Menace is a threat to all – it has no allies or enemies it is simply a danger that cannot be allowed to go unchecked. It may be malicious to all – a killer or mad beast – or it may be vastly indifferent – a storm or natural disaster – but it is unquestionably a threat which demands response, and the only responses that are really viable are to face it, flee it or succumb to it. "},
+    2: {'title': "Hidden Dangers",
+        'text': "A cocked stranger is very inauspicious, as it combines the worst elements of both facings. The Menace may have some Mystery about it which needs to solved to be able to deal with it, or the Mystery may contain some Menace that keeps it from being solved or which be released is the Mystery is not solved. "}
+    },
+2:
+    {'title': 'The Twins',
+    'text': 'The twins are two figures , opposite one another . Who they are is far less  important than how they relate to one another , for each is defined by this  relationship . When the twins appear, the relationship will be pushed to the forefront, to be strengthened or broken.',
+    0: {'title': "The Lovers",
+        'text': "The lovers may actually be lovers , but they may just as easily be family members,  partner s or friends . Whatever the relationship , acknowledged or not, it defines both of them in ways they may not admit , and if one is pricked, the other will be  sure to bleed . This is strength and weakness – the partner is a source of strength , but also of vulnerability. "},
+    1: {'title': "The Duelists",
+        'text': "Hatred ties one man to another as easily as love. The Duelists are in opposition to one another , competing directly with each other. The Duelists may compete over prizes and things, but those are just distractions – the goal is to overcome the other person. While this facing covers physical confrontations, it is equally apt for contests of words, or even long‐standing rivalries, as between an investigator and his quarry. "},
+    2: {'title': "Mismatch",
+        'text': "The Twins usually assume a degree of equity, but the mis matched twins discard that in one of two ways – there may be a mismatch of sentiment, or a mismatch of means. Regard the cocked hexbone carefully – if the figures are on opposite sides of the color line, there is a mismatch in sentiment –one may view the other as a friend or rival, but the other does not share that view. The y may be in opposition in their viewpoints (one loving, one hating) but more often, it merely means the sentiment is strongly held by only one. If the figures are on the same side of the color line, and it is only the background that crosses it, the mis match is in means. One party is more capable than the other in this arena of conflict, and this issue will be deeply lopsided if it comes to the forefront. This may mean a wife who dominates her husband or perhaps the  relationship of the hunter to the prey. "},
+    },
+
+3:
+    {'title': 'The Scales',
+    'text': 'The Scales are identical to the Twins, except that a third figure has been placed between them. This third figure serves as the crux of matters – the fulcrum point of the scale. Where the twins relationship is with each other, the Scales are defined by their relationship to the crux. The crux itself is usually torn between these forces, though whether she is the subject or object of the choice it creates depends upon the facing. ',
+    0: {'title': "The Prize",
+        'text': " In crux is desired by both of the figures at the poles, and they will contest each other to gain it. This has some apparent similarities with the Duelists, but the conflict is entirely about the crux, not about each other, but at the same time they may not value the crux itself so much as they value winning it. This does not  always work out for the crux, since the scales represent rival suitors as easily as they do two huntsmen after the same quarry. "},
+    1: {'title': "The Choice",
+        'text': "Power shifts to the hands of the crux now, who faces a choice between the two polar figures . Each may make his case, offer bribes or sweet promises, but the decision is ultimate ly in the hands of the crux. Again, it is not always good to be the crux – the choices may not be desirable, but there is always a choice."},
+    2: {'title': "The Stacked Deck",
+        'text': "When the scales are cocked, the outcome seems certain. The conflict is nearly won, the choice seems obvious and if matters are left as they are, things will play out predictable. The figure on the losing end may still have some chance to turn things around, but the odds aren’t good."},
+    },
+
+4:
+    {'title': 'The Towers',
+    'text': 'One figure stands at each cardinal point, standing watch. The Towers are figures of power, each potent in their own way, but they exist in the context of their peers. Each Tower may have a vision of supremacy, but the reality is that the board will never be cleared. The Towers may relate to one another , but more  importantly do they relate to the world around them, each playing their part in the larger game.',
+    0: {'title': "The Game",
+        'text': " The game is played between the towers and places them in opposition, each seeking to claim some prize. Like the Duelists, the prize itself is less important than the struggle and overcoming the influence of the other towers is the true goal. It is unlikely that this struggle will truly strike at the foundation of any tower – instead its final outcome is merely a shift in the ongoing contest. "},
+    1: {'title': "The Castle",
+        'text': "The Towers stand in alliance, at least loosely, and rather than turn their eye upon each other, they cast it outward to the world at larger. This may mean an agreed upon division of spheres, or simply that there is a wide enough venue that conflict is not an issue. Whatever the arrangement, each tower benefits from the presence of the other tower, and when an external threat manifests, they can count on each other for support."},
+    2: {'title': "A Fragile Alliance",
+        'text': "The Towers may oppose one another , but do not do so openly (if it can be avoided). Nominal peace and cooperation exists between them, but conflict roils beneath that surface, and the danger that the conflict may boil to the surface is a constant companion. "},
+    },
+
+5:
+    {'title': 'The Cross',
+    'text': 'The Cross appears very like the Towers, but like the Scales, an additional figure has been placed in the center. As with the scales, this new figure is the crux, and the relationship of the figures at the cardinal points are now defined by that Crux. The Cross is a powerful face, as it can reveal relationship s which were in‐obvious, for the Crux is hidden from view by a figure in each direction, and usually remains hidden. Even when the identity of the crux is unknown , knowledge that she exists can be powerful.',
+    0: {'title': "The Weaver",
+        'text': " The crux is the weaver, in the middle of a web of allies and servants who pursue her agenda. The y hide her from prying eyes, and act as her hands, allowing her to act without incriminating herself. The crux’s agenda is her own, but her means are as direct or indirect as her servants"},
+    1: {'title': "The Paladins",
+        'text': "The cardinal figures protect the crux. The y are not subservient to it, rather, each does so for his own reasons of duty, morals or necessity. The Paladins may not necessarily even be associated with one another , but their role is the same – protect the crux figure from whatever is currently threatening it. "},
+    2: {'title': "The Tangled Web",
+        'text': "This may be the hardest facing to read, since it suggests such a network of alliances, obedience, duty, command and secrecy that it can be difficult to unravel. The crux remains critical to matters at hand, but her ultimate role is unknown , even to those who surround her. It may be that she is strong and has earned both servants and paladins, but it may also be that she is weak, and needs these things to survive. "},
+    },
+
+6:
+    {'title': 'The Divide',
+    'text': 'Three figures stand in a neat line, mirrored by another three opposite across an open plain. Each trio is unified, but clearly separate from the opposing group. The re is an instinct to focus on these groups, but it is the gap between them which truly defines this face for better or ill.',
+    0: {'title': "The War",
+        'text': " The two sides are coming together in conflict, each looking to defeat the other. It may be deferred or delayed, but this underlying conflict is so important to both sides that unless something essential is changed, the best that can be hoped for is armistice for a time."},
+    1: {'title': "The Schism",
+        'text': "The two sides were once one, but are separating. Such a separation is painful, but all involved will call it necessary. The re may be comes conflict or contention in this division, but all in service of the goal of establishing firm lines of separation."},
+    2: {'title': "Ragged Lines",
+        'text': "The lines of separation are no longer clear. Allies in war are undependable, and opinion on division is far from unified. It may be time for purges or opportunistic conflict, but whatever the specifics, they will be broad and unpleasant."},
+    }
+
+
+
+
+}
