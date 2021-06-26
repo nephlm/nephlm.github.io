@@ -30,7 +30,7 @@ window.onload = function () {
         { "name": "AV Tech", "value": 1 },
         { "name": "Aero Tech", "value": 1 },
         { "name": "Basic Tech", "value": 6 },
-        { "name": "Capital Ship Repair", "value": 1 },
+        { "name": "Capital Ship Repair", "value": 5 },
         { "name": "Computer Science", "value": 9 },
         { "name": "Electronics", "value": 7 },
         { "name": "Electronic Security", "value": 7 },
