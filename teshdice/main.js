@@ -34,6 +34,7 @@ window.onload = function () {
         { "name": "Computer Science[8]", "value": 9 },
         { "name": "Electronics[8]", "value": 7 },
         { "name": "Electronic Security[8]", "value": 7 },
+        { "name": "Power Systems[8+1/4]", "value": 2 },
         { "name": "Robot Repair", "value": 7 },
         { "name": "Starship Repair", "value": 4 },
         { "name": "Weaponsmith", "value": 6 },
