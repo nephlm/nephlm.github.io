@@ -13,6 +13,7 @@ window.onload = function () {
         { 'name': 'Charisma', 'value': 10 },
         { 'name': 'Luck', 'value': 4 },
         { 'name': 'Psi', 'value': 9 },
+        { 'name': 'Daemon Stat', 'value': 5},
         { 'name': 'None', 'value': 0 },
     ]
 
@@ -60,6 +61,7 @@ window.onload = function () {
         { "name": "Math", "value": 6 },
         { "name": "Teach", "value": 2 },
         { "name": "Chipped Skill", "value": 5 },
+        { "name": "Borrowed Daemon Skill", "value": 5 },
     ]
 
     var skills_map = skills.reduce(function (map, obj) {
@@ -71,6 +73,7 @@ window.onload = function () {
         { 'name': 'Techlore', 'value': 3, 'var': 'techlore', 'selected': false },
         { 'name': 'Group Mind', 'value': 2, 'var': 'group_mind', 'selected': false },
         { 'name': 'Half Domain', 'value': 5, 'var': 'half_domain', 'selected': false },
+        { 'name': 'Drone Mod Bonus', 'value': 5, 'var': 'mod_bonus', 'selected': false },
     ]
 
     var bonuses_map = skills.reduce(function (map, obj) {
