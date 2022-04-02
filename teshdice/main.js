@@ -5,14 +5,14 @@ window.onload = function () {
     }
 
     var stats = [
-        { 'name': 'Strength', 'value': 9 },
+        { 'name': 'Strength', 'value': 12 },
         { 'name': 'Dexterity', 'value': 8 },
-        { 'name': 'Constitution', 'value': 12 },
-        { 'name': 'Intelligence', 'value': 9 },
-        { 'name': 'Tech', 'value': 9 },
-        { 'name': 'Charisma', 'value': 10 },
+        { 'name': 'Constitution', 'value': 21 },
+        { 'name': 'Intelligence', 'value': 15 },
+        { 'name': 'Tech', 'value': 15 },
+        { 'name': 'Charisma', 'value': 16 },
         { 'name': 'Luck', 'value': 4 },
-        { 'name': 'Psi', 'value': 9 },
+        { 'name': 'Psi', 'value': 18 },
         { 'name': 'Daemon Stat', 'value': 5},
         { 'name': 'None', 'value': 0 },
     ]
