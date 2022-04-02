@@ -6,7 +6,7 @@ window.onload = function () {
 
     var stats = [
         { 'name': 'Strength', 'value': 12 },
-        { 'name': 'Dexterity', 'value': 8 },
+        { 'name': 'Dexterity', 'value': 20 },
         { 'name': 'Constitution', 'value': 21 },
         { 'name': 'Intelligence', 'value': 15 },
         { 'name': 'Tech', 'value': 15 },
