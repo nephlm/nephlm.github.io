@@ -5,14 +5,15 @@ window.onload = function () {
     }
 
     var stats = [
-        { 'name': 'Strength', 'value': 9 },
-        { 'name': 'Dexterity', 'value': 8 },
-        { 'name': 'Constitution', 'value': 12 },
-        { 'name': 'Intelligence', 'value': 9 },
-        { 'name': 'Tech', 'value': 9 },
-        { 'name': 'Charisma', 'value': 10 },
+        { 'name': 'Strength', 'value': 12 },
+        { 'name': 'Dexterity', 'value': 20 },
+        { 'name': 'Constitution', 'value': 21 },
+        { 'name': 'Intelligence', 'value': 15 },
+        { 'name': 'Tech', 'value': 15 },
+        { 'name': 'Charisma', 'value': 16 },
         { 'name': 'Luck', 'value': 4 },
-        { 'name': 'Psi', 'value': 9 },
+        { 'name': 'Psi', 'value': 18 },
+        { 'name': 'Daemon Stat', 'value': 5},
         { 'name': 'None', 'value': 0 },
     ]
 
@@ -30,18 +31,19 @@ window.onload = function () {
         { "name": "AV Tech", "value": 1 },
         { "name": "Aero Tech", "value": 1 },
         { "name": "Basic Tech[8]", "value": 6 },
-        { "name": "Capital Ship Repair[8]", "value": 5 },
+        { "name": "Capital Ship Repair[8]", "value": 7 },
         { "name": "Computer Science[8]", "value": 9 },
         { "name": "Electronics[8]", "value": 7 },
         { "name": "Electronic Security[8]", "value": 7 },
-        { "name": "Robot Repair", "value": 7 },
-        { "name": "Starship Repair", "value": 4 },
-        { "name": "Weaponsmith", "value": 6 },
+        { "name": "Power Systems[8+2/4]", "value": 6 },
+        { "name": "Robot Repair [8]", "value": 7 },
+        { "name": "Starship Repair [8]", "value": 6 },
+        { "name": "Weaponsmith [8]", "value": 6 },
         { "name": "Communications[8]", "value": 1 },
         { "name": "Starship Pilot", "value": 1 },
         { "name": "Sensors", "value": 3 },
         { "name": "Starship Shields", "value": 1 },
-        { "name": "Capital Starship Shields[8|BB]", "value": 5 },
+        { "name": "Capital Starship Shields[8|BB]", "value": 7 },
         { "name": "Athletics", "value": 4 },
         { "name": "Awareness/Notice", "value": 6 },
         { "name": "Brawling", "value": 2 },
@@ -59,6 +61,7 @@ window.onload = function () {
         { "name": "Math", "value": 6 },
         { "name": "Teach", "value": 2 },
         { "name": "Chipped Skill", "value": 5 },
+        { "name": "Borrowed Daemon Skill", "value": 5 },
     ]
 
     var skills_map = skills.reduce(function (map, obj) {
@@ -70,6 +73,7 @@ window.onload = function () {
         { 'name': 'Techlore', 'value': 3, 'var': 'techlore', 'selected': false },
         { 'name': 'Group Mind', 'value': 2, 'var': 'group_mind', 'selected': false },
         { 'name': 'Half Domain', 'value': 5, 'var': 'half_domain', 'selected': false },
+        { 'name': 'Drone Mod Bonus', 'value': 5, 'var': 'mod_bonus', 'selected': false },
     ]
 
     var bonuses_map = skills.reduce(function (map, obj) {
