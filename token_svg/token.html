@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Token Maker</title>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js"
+            integrity="sha512-/e+XGe8oSD9M1t0NKNCrUlRsiyeFTiZw4+pmf0g8wTbc8IfiLwJsjTODc/pq3hKhKAdsehJs7STPvX7SkFSpOQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css"
+          integrity="sha512-HqxHUkJM0SYcbvxUw5P60SzdOTy/QVwA1JJrvaXJv4q7lmbDZCmZaqz01UPOaQveoxfYRv1tHozWGPMcuTBuvQ=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Keywords"
+          content="VTT, tokens, image, colors, maker, generator">
+    <meta name="Description"
+          content="Tiny page to make VTT generic Tokens for adhoc monsters or such.">
+    <style>
+      .logo {
+        height: .75em;
+        width: auto;
+        margin-right: -1rem;
+        padding-right: -1rem;
+
+      }
+
+      .make-button {
+        margin-bottom: 2rem;
+      }
+
+      .form-fields {
+        width: 25rem;
+        padding: 1rem;
+      }
+
+      .generated-image {margin: 1em;
+                    border: 1px solid gray;
+                    width: 100px;
+                    height: 100px;
+                    cursor: pointer}
+    </style>
+  </head>
+  <body>
+    <h1 class="has-text-info is-size-1 has-text-weight-bold m-4">
+      <img src="logo.svg" class="logo">
+      Token Maker
+    </h1>
+    <div id="app">
+      <!-- <div id="svg" v-html="token('hello')" @click="pngToken()"></div>
+      SVG
+
+<hr /> -->
+      <div class="form-fields">
+        <div id="png" class="has-text-centered">
+          <img download="foo_1x1.png"
+               id="png-img"
+               class="generated-image"
+               @click="downloadImage(this, 'suggested-filename.jpg')" />
+          <button class="button is-link make-button is-fullwidth" @click="pngToken()">Make PNG</button>
+          <div class="field">
+            <label class="label">Fill Color</label>
+            <div class="control">
+              <input v-model="fillColor"
+                     class="input"
+                     data-jscolor=""
+                     id="fillColorInput"
+                     @change="updatePicker()" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Ring Color</label>
+            <div class="control">
+              <input v-model="ringColor"
+                     class="input"
+                     data-jscolor=""
+                     id="ringColorInput"
+                     @change="updatePicker()" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Ring width:</label>
+            <input class="input" type="number" v-model="ringWidth" id="ringWidthInput" />
+          </div>
+          <div class="field">
+            <label class="label">label Color</label>
+            <div class="control">
+              <input class="input"
+                     v-model="labelColor"
+                     data-jscolor=""
+                     id="labelColorInput"
+                     @change="updatePicker()" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Label</label>
+            <input class="input"
+                   type="text"
+                   v-model="label"
+                   id="ringWidthInput"
+                   maxlength="2" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var MyApp = new Vue({
+        el: "#app",
+        data: {
+          fillColor: "#83AEFF",
+          ringColor: "#005500",
+          labelColor: "#000000",
+          ringWidth: 15,
+          label: "",
+          dataUrl: "",
+          lightDefaultPallette: [],
+          darkDefaultPallette: [],
+        },
+        mounted: function () {
+          console.log("mounted called");
+          jscolor.trigger();
+        },
+        methods: {
+          updatePicker() {
+            fillPicker = document.getElementById("fillColorInput").jscolor;
+            ringPicker = document.getElementById("ringColorInput").jscolor;
+            labelPicker = document.getElementById("labelColorInput").jscolor;
+            this.fillColor = fillPicker.toHEXString();
+            this.ringColor = ringPicker.toHEXString();
+            this.labelColor = labelPicker.toHEXString();
+          },
+
+          token(fillColor, ringColor, ringWidth, labelColor, text) {
+            let clampedRingWidth = Math.min(ringWidth, 50);
+            let radius = Math.max(50 - clampedRingWidth / 2, 25);
+            if (text == undefined) text = "";
+            console.log(radius);
+            return `
+            <svg version='1.1' width='100' height='100' xmlns='http://www.w3.org/2000/svg'>
+              <circle cx='50' cy='50' r='${radius}' stroke='${ringColor}' stroke-width='${clampedRingWidth}' fill='${fillColor}' fill-rule='nonzero' />
+              <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" style="font:bold 35px sans-serif" stroke="black" stroke-width="2" fill="${labelColor}">
+                ${text}
+              </text>
+            </svg>`;
+          },
+
+          pngToken() {
+            console.log("triggered");
+            let svgToken = this.token(
+              this.fillColor,
+              this.ringColor,
+              this.ringWidth,
+              this.labelColor,
+              this.label
+            );
+            let svgToken64 = btoa(unescape(encodeURIComponent(svgToken)));
+            let svgTokenUrl = `data:image/svg+xml;charset=utf-8;base64,${svgToken64}`;
+            console.log(svgToken);
+            console.log(svgToken64);
+            const image = new Image();
+
+            image.addEventListener("load", () => {
+              console.log("listener kicked");
+              const canvas = document.createElement("canvas");
+              canvas.setAttribute("height", 100);
+              canvas.setAttribute("width", 100);
+              const context = canvas.getContext("2d");
+
+              context.drawImage(image, 0, 0, 100, 100);
+              const dataUrl = canvas.toDataURL("image/png");
+              console.log(dataUrl);
+              pngEl = document.getElementById("png-img");
+              pngEl.src = dataUrl;
+              this.dataUrl = dataUrl;
+            });
+            image.src = svgTokenUrl;
+          },
+
+          downloadImage(image, filename) {
+            const link = document.createElement("a");
+            console.log("#bAD".replace("#", ""));
+            link.href = this.dataUrl;
+            link.download = `token_${this.fillColor.replace("#", "")}_${
+              this.ringWidth
+            }_${this.ringColor.replace("#", "")}_1x1.png`;
+            link.target = "_blank"; // Optional, opens the image in a new tab
+
+            // Append the link to the body
+            document.body.appendChild(link);
+
+            // Simulate a click on the link to start the download
+            link.click();
+
+            // Clean up
+            document.body.removeChild(link);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
