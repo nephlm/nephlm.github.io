@@ -1,2 +1,4 @@
 [tool.djlint]
 ignore = "H006,H013"
+format_css=true
+format_js=true
